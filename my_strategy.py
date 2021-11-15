@@ -1,10 +1,22 @@
+from decider.enemies_detector import EnemiesDetector
 from model import *
+
+from decider.units_storage import UnitsStorage
 
 
 class MyStrategy:
     def get_action(self, player_view, debug_interface):
         result = Action({})
         my_id = player_view.my_id
+
+        units_storage = UnitsStorage(my_id)
+        units_storage.update_storage(player_view.entities)
+
+        enemies_detector = EnemiesDetector()
+        enemies_detector.check_collisions(units_storage.get_allies(), units_storage.get_enemies())
+
+        print("Spotted %d enemies" % len(enemies_detector.get_collisions()))
+
         for entity in player_view.entities:
             if entity.player_id != my_id:
                 continue
