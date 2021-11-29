@@ -1,4 +1,6 @@
+from decider.default_choosing_strategy import DefaultChoosingStrategy
 from decider.enemies_detector import EnemiesDetector
+from decider.entities_producer import EntitiesProducer
 from model import *
 
 from decider.units_storage import UnitsStorage
@@ -17,8 +19,11 @@ class MyStrategy:
 
         print("Spotted %d enemies" % len(enemies_detector.get_collisions()))
 
+        entities_producer = EntitiesProducer(DefaultChoosingStrategy())
+        entities_producer.update(result, units_storage, player_view.entity_properties)
+
         for entity in player_view.entities:
-            if entity.player_id != my_id:
+            if entity.player_id != my_id or entity.entity_type != EntityType.BUILDER_UNIT:
                 continue
             properties = player_view.entity_properties[entity.entity_type]
 
@@ -30,16 +35,6 @@ class MyStrategy:
                             player_view.map_size - 1),
                     True,
                     True)
-            elif properties.build is not None:
-                entity_type = properties.build.options[0]
-                current_units = 0
-                for other_entity in player_view.entities:
-                    if my_id == other_entity.player_id and other_entity.entity_type == entity_type:
-                        current_units += 1
-                if (current_units + 1) * player_view.entity_properties[entity_type].population_use <= properties.population_provide:
-                    build_action = BuildAction(
-                        entity_type,
-                        Vec2Int(entity.position.x + properties.size, entity.position.y + properties.size - 1))
             result.entity_actions[entity.id] = EntityAction(
                 move_action,
                 build_action,
