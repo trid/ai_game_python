@@ -8,9 +8,9 @@ class ResourceProcessor:
         self.__entities = entities
 
     def checkCoordinates(self, x, y):
-
         for entity in self.__entities:
-            if entity.player_id != self.__player_id and entity.position.x == x and entity.position.y == y and entity.entity_type == None:
+            if entity.player_id != self.__player_id and entity.position.x == x and entity.position.y == y \
+                    and entity.entity_type is None:
                 return 1
         return 0
 

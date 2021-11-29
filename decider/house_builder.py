@@ -1,4 +1,3 @@
-from model.player_view import PlayerView
 import constants
 
 
@@ -20,7 +19,7 @@ class HouseBuilder:
         print(self.__builders_id)
 
     def add_house(self, coord):
-        self.__houses =+1
+        self.__houses += 1
         self.__coord = coord
 
     def get_houses_count(self):

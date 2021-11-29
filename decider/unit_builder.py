@@ -15,18 +15,48 @@ class UnitBuilder:
 
         self.__building = buildings[0]
 
-    def build_unit(self, commands_list):
+    def build_unit(self, commands_list, current_map):
         if self.__building is None:
             # No producing building
             return
 
+        position_to_build = self.__find_empty_place_around(current_map)
+        if position_to_build is None:
+            print("No empty position around building")
+            return
+
         build_action = BuildAction(
             self.__building_properties.build.options[0],
-            Vec2Int(self.__building.position.x + self.__building_properties.size,
-                    self.__building.position.y + self.__building_properties.size - 1))
+            Vec2Int(*position_to_build))
 
         commands_list.entity_actions[self.__building.id] = EntityAction(None, build_action, None, None)
 
     def stop(self, commands_list):
         # "Горшочек не вари" mode
         commands_list.entity_actions[self.__building.id] = EntityAction(None, None, None, None)
+
+    def __find_empty_place_around(self, current_map):
+        for pos in range(self.__building.position.x,
+                           self.__building.position.x + self.__building_properties.size):
+            point = (pos, self.__building.position.y - 1)
+            if point[0] < 0 or point[1] < 0:
+                continue
+            # Search by x-axis
+            if current_map.get(point, None) is None:
+                return point
+            point = (pos, self.__building.position.y + self.__building_properties.size)
+            if current_map.get(point, None) is None:
+                return point
+
+        for pos in range(self.__building.position.y,
+                           self.__building.position.y + self.__building_properties.size):
+            point = (self.__building.position.x - 1, pos)
+            if point[0] < 0 or point[1] < 0:
+                continue
+            # Search by x-axis
+            if current_map.get(point, None) is None:
+                return point
+            point = (self.__building.position.x + self.__building_properties.size, pos)
+            if current_map.get(point, None) is None:
+                return point
+        return None

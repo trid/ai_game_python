@@ -1,6 +1,7 @@
 from decider.default_choosing_strategy import DefaultChoosingStrategy
 from decider.enemies_detector import EnemiesDetector
 from decider.entities_producer import EntitiesProducer
+from decider.map_processor import MapProcessor
 from model import *
 
 from decider.units_storage import UnitsStorage
@@ -17,9 +18,9 @@ class MyStrategy:
         enemies_detector = EnemiesDetector()
         enemies_detector.check_collisions(units_storage.get_allies(), units_storage.get_enemies())
 
-        print("Spotted %d enemies" % len(enemies_detector.get_collisions()))
+        map_for_tick = MapProcessor(player_view).get_map()
 
-        entities_producer = EntitiesProducer(DefaultChoosingStrategy())
+        entities_producer = EntitiesProducer(DefaultChoosingStrategy(), map_for_tick)
         entities_producer.update(result, units_storage, player_view.entity_properties)
 
         for entity in player_view.entities:

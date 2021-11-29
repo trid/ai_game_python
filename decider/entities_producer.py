@@ -3,8 +3,9 @@ from model import EntityType
 
 
 class EntitiesProducer:
-    def __init__(self, choosing_strategy):
+    def __init__(self, choosing_strategy, current_map):
         self.__choosing_strategy = choosing_strategy
+        self.__map = current_map
 
     def update(self, commands, units_storage, entities_params):
         entity_to_produce = self.__choosing_strategy.decide(units_storage, entities_params)
@@ -19,11 +20,11 @@ class EntitiesProducer:
         builders_unit_builder.stop(commands)
 
         if entity_type == EntityType.MELEE_UNIT:
-            melee_unit_builder.build_unit(commands)
+            melee_unit_builder.build_unit(commands, self.__map)
         elif entity_type == EntityType.RANGED_UNIT:
-            range_unit_builder.build_unit(commands)
+            range_unit_builder.build_unit(commands, self.__map)
         elif entity_type == EntityType.BUILDER_UNIT:
-            builders_unit_builder.build_unit(commands)
+            builders_unit_builder.build_unit(commands, self.__map)
         elif entity_type == EntityType.HOUSE:
             # Build houses here
             pass
