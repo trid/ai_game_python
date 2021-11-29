@@ -1,10 +1,13 @@
 from decider.enemies_detector import EnemiesDetector
-from model import *
-
 from decider.units_storage import UnitsStorage
+from decider.units_tracker import UnitsTracker
+from model import *
 
 
 class MyStrategy:
+    def __init__(self):
+        self.__units_tracker = UnitsTracker()
+
     def get_action(self, player_view, debug_interface):
         result = Action({})
         my_id = player_view.my_id
@@ -14,8 +17,6 @@ class MyStrategy:
 
         enemies_detector = EnemiesDetector()
         enemies_detector.check_collisions(units_storage.get_allies(), units_storage.get_enemies())
-
-        print("Spotted %d enemies" % len(enemies_detector.get_collisions()))
 
         for entity in player_view.entities:
             if entity.player_id != my_id:
