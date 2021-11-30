@@ -1,7 +1,9 @@
+from decider.battle_units_director import BattleUnitsDirector
 from decider.default_choosing_strategy import DefaultChoosingStrategy
 from decider.enemies_detector import EnemiesDetector
 from decider.entities_producer import EntitiesProducer
 from decider.map_processor import MapProcessor
+from decider.units_tracker import UnitsTracker
 from model import *
 
 from decider.units_storage import UnitsStorage
@@ -22,6 +24,9 @@ class MyStrategy:
 
         entities_producer = EntitiesProducer(DefaultChoosingStrategy(), map_for_tick)
         entities_producer.update(result, units_storage, player_view.entity_properties)
+
+        battle_units_director = BattleUnitsDirector(units_storage.get_allies(), UnitsTracker())
+        battle_units_director.update_commands(enemies_detector.get_collisions(), result)
 
         for entity in player_view.entities:
             if entity.player_id != my_id or entity.entity_type != EntityType.BUILDER_UNIT:

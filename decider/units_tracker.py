@@ -9,4 +9,4 @@ class UnitsTracker:
         self.__working_units.remove(unit.id)
 
     def is_unit_idle(self, unit):
-        return unit.id in self.__working_units
+        return unit.id not in self.__working_units
