@@ -29,7 +29,7 @@ class MyStrategy:
         entities_producer = EntitiesProducer(DefaultChoosingStrategy(), map_for_tick)
         entities_producer.update(result, units_storage, player_view.entity_properties)
 
-        battle_units_director = BattleUnitsDirector(units_storage.get_allies(), UnitsTracker())
+        battle_units_director = BattleUnitsDirector(units_storage.get_allies(), self.__units_tracker)
         battle_units_director.update_commands(enemies_detector.get_collisions(), result)
 
         builder_units_director = BuilderUnitsDirector(units_storage.get_allies(), self.__units_tracker)
