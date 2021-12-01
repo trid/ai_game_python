@@ -1,4 +1,5 @@
-from decider.battle_units_director import BattleUnitsDirector
+from decider.builder_hunting_units_director import BuilderHuntingUnitsDirector
+from decider.defencive_battle_units_director import DefensiveBattleUnitsDirector
 from decider.builder_units_director import BuilderUnitsDirector
 from decider.default_choosing_strategy import DefaultChoosingStrategy
 from decider.enemies_detector import EnemiesDetector
@@ -13,6 +14,8 @@ from decider.units_storage import UnitsStorage
 class MyStrategy:
     def __init__(self):
         self.__units_tracker = UnitsTracker()
+        self.__builders_hunting_units_director1 = BuilderHuntingUnitsDirector(True)
+        self.__builders_hunting_units_director2 = BuilderHuntingUnitsDirector(False)
 
     def get_action(self, player_view, debug_interface):
         result = Action({})
@@ -29,13 +32,21 @@ class MyStrategy:
         entities_producer = EntitiesProducer(DefaultChoosingStrategy(), map_for_tick)
         entities_producer.update(result, units_storage, player_view.entity_properties)
 
-        battle_units_director = BattleUnitsDirector(units_storage.get_allies(), self.__units_tracker)
-        battle_units_director.update_commands(enemies_detector.get_collisions(), result)
+        self.make_units_move(enemies_detector, player_view, result, units_storage)
+        return result
 
+    def make_units_move(self, enemies_detector, player_view, result, units_storage):
+        self.__builders_hunting_units_director1.update(player_view, units_storage.get_enemies(),
+                                                       units_storage.get_allies(),
+                                                       self.__units_tracker, result)
+        self.__builders_hunting_units_director2.update(player_view, units_storage.get_enemies(),
+                                                       units_storage.get_allies(),
+                                                       self.__units_tracker, result)
+        defensive_battle_units_director = DefensiveBattleUnitsDirector(units_storage.get_allies(), self.__units_tracker)
+        defensive_battle_units_director.update_commands(enemies_detector.get_collisions(), result)
         builder_units_director = BuilderUnitsDirector(units_storage.get_allies(), self.__units_tracker)
         builder_units_director.update_commands(result, player_view.map_size,
                                                player_view.entity_properties[EntityType.BUILDER_UNIT])
-        return result
 
     def debug_update(self, player_view, debug_interface):
         debug_interface.send(DebugCommand.Clear())

@@ -2,7 +2,7 @@ from decider.units_tracker import UnitsTracker
 from model import EntityType, EntityAction, MoveAction, AttackAction, AutoAttack
 
 
-class BattleUnitsDirector:
+class DefensiveBattleUnitsDirector:
     def __init__(self, units, units_tracker):
         self.__units_tracker = units_tracker
         self.__units = list(filter(self.__filter_units, units))
