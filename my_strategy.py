@@ -1,4 +1,5 @@
 from decider.battle_units_director import BattleUnitsDirector
+from decider.builder_units_director import BuilderUnitsDirector
 from decider.default_choosing_strategy import DefaultChoosingStrategy
 from decider.enemies_detector import EnemiesDetector
 from decider.entities_producer import EntitiesProducer
@@ -10,6 +11,9 @@ from decider.units_storage import UnitsStorage
 
 
 class MyStrategy:
+    def __init__(self):
+        self.__units_tracker = UnitsTracker()
+
     def get_action(self, player_view, debug_interface):
         result = Action({})
         my_id = player_view.my_id
@@ -28,26 +32,9 @@ class MyStrategy:
         battle_units_director = BattleUnitsDirector(units_storage.get_allies(), UnitsTracker())
         battle_units_director.update_commands(enemies_detector.get_collisions(), result)
 
-        for entity in player_view.entities:
-            if entity.player_id != my_id or entity.entity_type != EntityType.BUILDER_UNIT:
-                continue
-            properties = player_view.entity_properties[entity.entity_type]
-
-            move_action = None
-            build_action = None
-            if properties.can_move:
-                move_action = MoveAction(
-                    Vec2Int(player_view.map_size - 1,
-                            player_view.map_size - 1),
-                    True,
-                    True)
-            result.entity_actions[entity.id] = EntityAction(
-                move_action,
-                build_action,
-                AttackAction(None, AutoAttack(properties.sight_range, [
-                             EntityType.RESOURCE] if entity.entity_type == EntityType.BUILDER_UNIT else [])),
-                None
-            )
+        builder_units_director = BuilderUnitsDirector(units_storage.get_allies(), self.__units_tracker)
+        builder_units_director.update_commands(result, player_view.map_size,
+                                               player_view.entity_properties[EntityType.BUILDER_UNIT])
         return result
 
     def debug_update(self, player_view, debug_interface):
