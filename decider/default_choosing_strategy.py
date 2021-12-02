@@ -1,4 +1,4 @@
-from decider.constants import STARTING_POPULATION_LIMIT, BEGIN_HOUSE_BUILD_RESOURCES
+from decider.constants import STARTING_POPULATION_LIMIT, BEGIN_HOUSE_BUILD_RESOURCES, MAX_BUILDERS_COUNT
 from model.entity_type import EntityType
 
 
@@ -39,7 +39,7 @@ class DefaultChoosingStrategy:
 
         # Actually, with Python3 we don't need such precaution, but I believe there would be problems with Python2
         # Better safe than sorry
-        if float(builders_count) / range_count < self.__builder_to_archers_proportion:
+        if float(builders_count) / range_count < self.__builder_to_archers_proportion and builders_count < MAX_BUILDERS_COUNT:
             builders_count += 1
             result.append(EntityType.BUILDER_UNIT)
         if float(range_count) / melee_count < self.__archers_to_melee_proportion:

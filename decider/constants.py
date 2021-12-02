@@ -3,6 +3,8 @@ HOUSE_BUILDERS = 1
 MAX_HOUSES_PER_TICK = 1
 BEGIN_HOUSE_BUILD_RESOURCES = 50
 ZERG_RUSH_READY_AMOUNT = 20
+# We may need to remove this one when we will be able to build new bases
+MAX_BUILDERS_COUNT = 15
 
 # Building sizes for the map
 BUILDING_HOUSE_SIZE = (3, 3)
