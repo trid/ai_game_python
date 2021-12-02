@@ -31,7 +31,7 @@ class MyStrategy:
 
         military_units_count = len(find_idle_military_units(units_storage.get_allies(), self.__units_tracker))
         enemies_detector = EnemiesDetector(
-            DetectionStrategy.BY_BUILDINGS if military_units_count < ZERG_RUSH_READY_AMOUNT else DetectionStrategy.BY_ALL_ENTITES)
+            DetectionStrategy.BY_BUILDINGS_AND_BUILDERS if military_units_count < ZERG_RUSH_READY_AMOUNT else DetectionStrategy.BY_ALL_ENTITES)
         enemies_detector.check_collisions(units_storage.get_allies(), units_storage.get_enemies())
 
         map_for_tick = MapProcessor(player_view).get_map()

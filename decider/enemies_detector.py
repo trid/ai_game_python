@@ -10,7 +10,7 @@ def square_distance(x1, x2, y1, y2):
 
 
 class DetectionStrategy(IntEnum):
-    BY_BUILDINGS = 0,
+    BY_BUILDINGS_AND_BUILDERS = 0,
     BY_ALL_ENTITES = 1
 
 
@@ -22,9 +22,11 @@ class EnemiesDetector:
         self.__detection_strategy = detection_strategy
 
     def check_collisions(self, allies, enemies):
-        building_types = (EntityType.RANGED_BASE, EntityType.MELEE_BASE, EntityType.BUILDER_BASE, EntityType.TURRET)
+        building_and_builders_types = (
+                                       EntityType.RANGED_BASE, EntityType.MELEE_BASE, EntityType.BUILDER_BASE,
+                                       EntityType.TURRET, EntityType.BUILDER_UNIT)
         detecting_units = allies if self.__detection_strategy == DetectionStrategy.BY_ALL_ENTITES else list(
-            filter(lambda entity: entity.entity_type in building_types, allies))
+            filter(lambda entity: entity.entity_type in building_and_builders_types, allies))
         for unit in detecting_units:
             self.find_all_collisions(unit, enemies)
 
