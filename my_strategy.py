@@ -1,13 +1,15 @@
 from decider.builder_hunting_units_director import BuilderHuntingUnitsDirector
+from decider.constants import ZERG_RUSH_READY_AMOUNT
 from decider.defencive_battle_units_director import DefensiveBattleUnitsDirector
 from decider.builder_units_director import BuilderUnitsDirector
 from decider.default_choosing_strategy import DefaultChoosingStrategy
-from decider.enemies_detector import EnemiesDetector
+from decider.enemies_detector import EnemiesDetector, DetectionStrategy
 from decider.entities_producer import EntitiesProducer
 from decider.map_processor import MapProcessor
 from decider.units_tracker import UnitsTracker
 from decider.house_builder import HouseBuilder
 from decider.resource_processor import ResourceProcessor
+from decider.utils import find_idle_military_units
 from model import *
 
 from decider.units_storage import UnitsStorage
@@ -27,7 +29,9 @@ class MyStrategy:
         units_storage = UnitsStorage(my_id)
         units_storage.update_storage(player_view.entities)
 
-        enemies_detector = EnemiesDetector()
+        military_units_count = len(find_idle_military_units(units_storage.get_allies(), self.__units_tracker))
+        enemies_detector = EnemiesDetector(
+            DetectionStrategy.BY_BUILDINGS if military_units_count < ZERG_RUSH_READY_AMOUNT else DetectionStrategy.BY_ALL_ENTITES)
         enemies_detector.check_collisions(units_storage.get_allies(), units_storage.get_enemies())
 
         map_for_tick = MapProcessor(player_view).get_map()

@@ -9,8 +9,8 @@ class DefensiveBattleUnitsDirector:
         self.__internal_tracker = UnitsTracker()
 
     def __filter_units(self, unit):
-        return unit.entity_type == EntityType.MELEE_UNIT or unit.entity_type == EntityType.RANGED_UNIT or \
-               not self.__units_tracker.is_unit_idle(unit)
+        return (unit.entity_type == EntityType.MELEE_UNIT or unit.entity_type == EntityType.RANGED_UNIT) and \
+               self.__units_tracker.is_unit_idle(unit)
 
     def update_commands(self, detected_enemies, commands):
         detected_enemies_count = len(detected_enemies)
