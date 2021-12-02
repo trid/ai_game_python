@@ -1,4 +1,4 @@
-from decider.constants import HOUSE_BUILDERS
+from decider.constants import HOUSE_BUILDERS, BUILDING_HOUSE_SIZE
 from model import BuildAction, MoveAction, RepairAction, Vec2Int, EntityAction, EntityType
 
 
@@ -32,12 +32,12 @@ class HouseBuilder:
         for id, command in self.__update_build_commands.items():
             if command is not None:
                 commands.entity_actions[id] = command
-                print("Build house=", id, " coord=", command)
+                print("Build house = ", id, " coord=", command)
 
         for id, command in self.__update_repair_commands.items():
             if command is not None:
                 commands.entity_actions[id] = command
-                print("Repair house=", id)
+                print("Repair house = ", id)
 
     def is_builder(self, id):
         if id in self.__builders_id:
@@ -73,22 +73,26 @@ class HouseBuilder:
 
         print("House coord=", house_coord, " builder_id=", builder_id)
 
+    def check_if_suitable_position(self, current_map, coord):
+        for x in range(coord[0] - 1, coord[0] + BUILDING_HOUSE_SIZE[0] + 1):
+            for y in range(coord[1] - 1, coord[1] + BUILDING_HOUSE_SIZE[1] + 1):
+                if current_map.get((x, y)) is not None:
+                    return False
+
+        return True
+
     def get_new_house_coors(self, current_map):
+        map_for_houses_size = 50
+        distance_from_the_corner = 0
 
-        start_x = 1
-        start_y = 1
-
-        map_size = 25  # ??
-
-        for x in range(start_x + 1, map_size - 1):
-            for y in range(start_y + 1, map_size - 1):
-                can_build = True
-                for x_check in range(x - 3, x + 3):
-                    for y_check in range(y - 3, y + 3):
-                        if current_map.get((x_check, y_check), None) is not None:
-                            can_build = False
-                if can_build:
+        while distance_from_the_corner < map_for_houses_size:
+            for x in range(distance_from_the_corner):
+                y = distance_from_the_corner - x
+                if self.check_if_suitable_position(current_map, (x, y)):
+                    print("NEW HOUSE SUITABLE: ", (x, y))
                     return x, y
+
+            distance_from_the_corner += 1
 
     def find_nearest_builder_id(self, house_coord, units):
         buildings = list(filter(lambda item: item.entity_type == EntityType.BUILDER_UNIT, units))
