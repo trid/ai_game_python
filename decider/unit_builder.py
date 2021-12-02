@@ -32,7 +32,6 @@ class UnitBuilder:
         commands_list.entity_actions[self.__building.id] = EntityAction(None, build_action, None, None)
 
     def stop(self, commands_list):
-        # "Горшочек не вари" mode
         if self.__building is None:
             return
         commands_list.entity_actions[self.__building.id] = EntityAction(None, None, None, None)

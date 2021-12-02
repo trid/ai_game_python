@@ -1,4 +1,4 @@
-from decider.constants import STARTING_POPULATION_LIMIT
+from decider.constants import STARTING_POPULATION_LIMIT, BEGIN_HOUSE_BUILD_RESOURCES
 from model.entity_type import EntityType
 
 
@@ -7,7 +7,7 @@ class DefaultChoosingStrategy:
         self.__builder_to_archers_proportion = builder_to_archers_proportion
         self.__archers_to_melee_proportion = archers_to_melee_proportion
 
-    def decide(self, units_storage, entities_params):
+    def decide(self, units_storage, entities_params, current_resources):
         builders_count = 0
         melee_count = 0
         range_count = 0
@@ -23,7 +23,7 @@ class DefaultChoosingStrategy:
             elif item.entity_type == EntityType.HOUSE:
                 pop_limit += entities_params[EntityType.HOUSE].population_provide
 
-        if builders_count + melee_count + range_count >= pop_limit:
+        if builders_count + melee_count + range_count >= pop_limit and current_resources > BEGIN_HOUSE_BUILD_RESOURCES:
             print("Population limit reached: produce houses")
             return EntityType.HOUSE
         elif builders_count == 0:
