@@ -9,3 +9,9 @@ def find_idle_military_units(units, units_tracker):
 
 def find_units_by_types(units, types):
     return list(filter(lambda unit: unit.entity_type in types, units))
+
+
+def find_unit_coordinates(unit_id, map):
+    for coord, entity in map.items():
+        if entity.id == unit_id:
+            return coord

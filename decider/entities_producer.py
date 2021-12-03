@@ -4,14 +4,14 @@ from model import EntityType
 
 
 class EntitiesProducer:
-    def __init__(self, choosing_strategy, current_map, house_builder):
+    def __init__(self, choosing_strategy, current_map, building_builder):
         self.__choosing_strategy = choosing_strategy
         self.__map = current_map
-        self.__house_builder = house_builder
-        self.__house_number = 0
+        self.__building_builder = building_builder
 
     def update(self, commands, units_storage, entities_params, current_resources):
-        entities_to_produce = self.__choosing_strategy.decide(units_storage, entities_params, current_resources)
+        entities_to_produce = self.__choosing_strategy.decide(units_storage, entities_params, current_resources,
+                                                              self.__building_builder.buildings_in_progress_count(EntityType.HOUSE))
         self.produce_entity(entities_to_produce, entities_params, commands, units_storage.get_allies())
 
     def produce_entity(self, produced_entities, building_params, commands, units):
@@ -30,6 +30,7 @@ class EntitiesProducer:
             elif entity_type == EntityType.BUILDER_UNIT:
                 builders_unit_builder.build_unit(commands, self.__map)
             elif entity_type == EntityType.HOUSE:
-                if self.__house_number < MAX_HOUSES_PER_TICK:
-                    self.__house_builder.add_house(commands, self.__map, units)
-                    self.__house_number += 1
+                self.__building_builder.request_building(commands, self.__map, units, EntityType.HOUSE)
+            elif entity_type == EntityType.MELEE_BASE:
+                self.__building_builder.request_building(commands, self.__map, units, EntityType.MELEE_BASE)
+

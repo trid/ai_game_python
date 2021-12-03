@@ -7,7 +7,7 @@ from decider.enemies_detector import EnemiesDetector, DetectionStrategy
 from decider.entities_producer import EntitiesProducer
 from decider.map_processor import MapProcessor
 from decider.units_tracker import UnitsTracker
-from decider.house_builder import HouseBuilder
+from decider.bulding_builder import BuildingBuilder
 from decider.resource_processor import ResourceProcessor
 from decider.utils import find_idle_military_units
 from model import *
@@ -20,7 +20,7 @@ class MyStrategy:
         self.__units_tracker = UnitsTracker()
         self.__builders_hunting_units_director1 = BuilderHuntingUnitsDirector(True)
         self.__builders_hunting_units_director2 = BuilderHuntingUnitsDirector(False)
-        self.__house_builder = HouseBuilder()
+        self.__building_builder = BuildingBuilder(self.__units_tracker)
 
     def get_action(self, player_view, debug_interface):
         result = Action({})
@@ -39,22 +39,16 @@ class MyStrategy:
         resource_processor = ResourceProcessor(my_id, player_view.entities)
         current_resource = resource_processor.getMyPlayerResources(player_view)
 
-        entities_producer = EntitiesProducer(DefaultChoosingStrategy(), map_for_tick, self.__house_builder)
+        entities_producer = EntitiesProducer(DefaultChoosingStrategy(), map_for_tick, self.__building_builder)
         entities_producer.update(result, units_storage, player_view.entity_properties, current_resource)
 
-        self.__house_builder.update(units_storage.get_allies())
+        self.__building_builder.update(map_for_tick)
 
         self.make_units_move(enemies_detector, player_view, result, units_storage)
         return result
 
     def make_units_move(self, enemies_detector, player_view, result, units_storage):
-
         not_builder_units = units_storage.get_allies()
-
-        # pass if unit build house
-        for unit in units_storage.get_allies():
-            if self.__house_builder.is_builder(unit.id):
-                not_builder_units.remove(unit)
 
         self.__builders_hunting_units_director1.update(player_view, units_storage.get_enemies(),
                                                        not_builder_units,
@@ -68,7 +62,7 @@ class MyStrategy:
         builder_units_director.update_commands(result, player_view.map_size,
                                                player_view.entity_properties[EntityType.BUILDER_UNIT])
 
-        self.__house_builder.update_commands(result)
+        self.__building_builder.update_commands(result)
 
     def debug_update(self, player_view, debug_interface):
         debug_interface.send(DebugCommand.Clear())
