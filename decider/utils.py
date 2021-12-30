@@ -15,3 +15,6 @@ def find_unit_coordinates(unit_id, map):
     for coord, entity in map.items():
         if entity.id == unit_id:
             return coord
+
+def manhattan_distance(point1, point2):
+    return abs(point2.x - point1.x) + abs(point2.y - point1.y)

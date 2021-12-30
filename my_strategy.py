@@ -1,3 +1,8 @@
+from decider.army.army import Army
+from decider.army.army_defensive_strategy import ArmyDefensiveStrategy
+from decider.army.army_tactics import ArmyTactics
+from decider.army.army_updater import ArmyUpdater
+from decider.army.default_assigning_strategy import DefaultAssigningStrategy
 from decider.builder_hunting_units_director import BuilderHuntingUnitsDirector
 from decider.constants import ZERG_RUSH_READY_AMOUNT
 from decider.defencive_battle_units_director import DefensiveBattleUnitsDirector
@@ -21,6 +26,7 @@ class MyStrategy:
         self.__builders_hunting_units_director1 = BuilderHuntingUnitsDirector(True)
         self.__builders_hunting_units_director2 = BuilderHuntingUnitsDirector(False)
         self.__building_builder = BuildingBuilder(self.__units_tracker)
+        self.__army_tactics = ArmyTactics(self.__units_tracker)
 
     def get_action(self, player_view, debug_interface):
         result = Action({})
@@ -44,10 +50,11 @@ class MyStrategy:
 
         self.__building_builder.update(map_for_tick)
 
-        self.make_units_move(enemies_detector, player_view, result, units_storage)
+        self.__army_tactics.update(result, units_storage)
+        self.make_units_move(player_view, result, units_storage)
         return result
 
-    def make_units_move(self, enemies_detector, player_view, result, units_storage):
+    def make_units_move(self, player_view, result, units_storage):
         not_builder_units = units_storage.get_allies()
 
         self.__builders_hunting_units_director1.update(player_view, units_storage.get_enemies(),
@@ -56,8 +63,6 @@ class MyStrategy:
         self.__builders_hunting_units_director2.update(player_view, units_storage.get_enemies(),
                                                        not_builder_units,
                                                        self.__units_tracker, result)
-        defensive_battle_units_director = DefensiveBattleUnitsDirector(not_builder_units, self.__units_tracker)
-        defensive_battle_units_director.update_commands(enemies_detector.get_collisions(), result)
         builder_units_director = BuilderUnitsDirector(not_builder_units, self.__units_tracker)
         builder_units_director.update_commands(result, player_view.map_size,
                                                player_view.entity_properties[EntityType.BUILDER_UNIT])

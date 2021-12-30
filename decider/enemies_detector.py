@@ -1,12 +1,7 @@
 from enum import IntEnum
 
+from decider.utils import manhattan_distance
 from model import EntityType
-
-
-def square_distance(x1, x2, y1, y2):
-    delta_x = x2 - x1
-    delta_y = y2 - y1
-    return delta_x * delta_x + delta_y * delta_y
 
 
 class DetectionStrategy(IntEnum):
@@ -15,9 +10,9 @@ class DetectionStrategy(IntEnum):
 
 
 class EnemiesDetector:
-    DANGEROUS_DISTANCE_SQ = 400
+    DANGEROUS_DISTANCE = 20
 
-    def __init__(self, detection_strategy):
+    def __init__(self, detection_strategy=DetectionStrategy.BY_BUILDINGS_AND_BUILDERS):
         self.__collisions = set()
         self.__detection_strategy = detection_strategy
 
@@ -32,8 +27,8 @@ class EnemiesDetector:
 
     def find_all_collisions(self, unit, enemies):
         for enemy in enemies:
-            sq_dist = square_distance(unit.position.x, enemy.position.x, unit.position.y, enemy.position.y)
-            if (sq_dist < self.DANGEROUS_DISTANCE_SQ):
+            sq_dist = manhattan_distance(unit.position, enemy.position)
+            if (sq_dist < self.DANGEROUS_DISTANCE):
                 self.__collisions.add(enemy)
 
     def get_collisions(self):
